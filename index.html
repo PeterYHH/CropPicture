@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Crop and Export</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css" rel="stylesheet">
+    <style>
+        img {
+            max-width: 100%; /* 保持圖片寬度自適應 */
+        }
+    </style>
+</head>
+<body>
+
+<h1>上傳並裁切圖片</h1>
+
+<!-- 圖片上傳 -->
+<input type="file" id="imageInput">
+<br><br>
+
+<!-- 圖片預覽 -->
+<div>
+    <img id="image" style="display: none;">
+</div>
+
+<!-- 匯出按鈕 -->
+<button id="cropButton" style="display: none;">裁切並導出</button>
+
+<!-- 導出的裁切圖片 -->
+<h3>裁切後的圖片：</h3>
+<img id="croppedImage">
+
+<!-- Cropper.js JavaScript -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
+<script>
+    // 變數宣告
+    let cropper;
+    const imageInput = document.getElementById('imageInput');
+    const image = document.getElementById('image');
+    const cropButton = document.getElementById('cropButton');
+    const croppedImage = document.getElementById('croppedImage');
+
+    // 當使用者選擇檔案時觸發
+    imageInput.addEventListener('change', function (event) {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                image.src = e.target.result;
+                image.style.display = 'block';
+                cropButton.style.display = 'inline';
+                
+                // 初始化 Cropper.js
+                if (cropper) {
+                    cropper.destroy();  // 銷毀之前的實例
+                }
+                cropper = new Cropper(image, {
+                    aspectRatio: NaN, // 允許自由裁切
+                    viewMode: 1, // 顯示模式
+                });
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+
+    // 當點擊裁切按鈕時觸發
+    cropButton.addEventListener('click', function () {
+        const canvas = cropper.getCroppedCanvas({
+            width: 300,
+        });
+        croppedImage.src = canvas.toDataURL();
+    });
+</script>
+
+</body>
+</html>
